@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Rate Monitor</title>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Real-Time Heart Rate Monitor</h1>
+    <div>
+        <h2>Current Heart Rate: <span id="heart_rate">Calculating...</span> BPM</h2>
+    </div>
+    <img src="{{ url_for('video_feed') }}" width="640" height="480" />
+    
+    <br>
+    <button id="start_button">Start Monitoring</button>
+    <button id="stop_button">Stop Monitoring</button>
+
+    <script>
+        const socket = io.connect("http://127.0.0.1:5001");
+
+        socket.on('heart_rate', function(data) {
+            document.getElementById('heart_rate').textContent = data.heart_rate;
+        });
+
+        document.getElementById("start_button").addEventListener("click", function() {
+            fetch('/start_monitoring').then(response => {
+                console.log('Monitoring started.');
+            });
+        });
+
+        document.getElementById("stop_button").addEventListener("click", function() {
+            fetch('/stop_monitoring').then(response => {
+                response.text().then(text => {
+                    document.getElementById('heart_rate').textContent = text;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
